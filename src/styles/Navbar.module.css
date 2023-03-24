@@ -1,0 +1,24 @@
+.navBarContainer {
+    box-shadow: 0 2px 4px 0 lightskyblue;
+}
+
+.navHeader {
+    color: lightskyblue;
+}
+
+.navbarItem {
+    padding-top: 2px;
+}
+
+.navbarLink {
+    text-transform: capitalize;
+    color: lightskyblue;
+    padding: 0px 10px 0 10px;
+}
+
+/* Note: Handle responsiveness here */
+@media screen and (max-width: 1000px) {
+    .navbarLink {
+        padding: 0px;
+    }
+}
