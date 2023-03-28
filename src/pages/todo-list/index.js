@@ -3,18 +3,62 @@
 import React, { useState } from 'react';
 import styles from "../../styles/Todo.module.css";
 
+// Note: Importing required components...!
+import List from './list';
+import DataNotFound from "./not-found";
+
 const TodoListApp = () => {
 
     // Note: Handeling states here...!
     const [todoInput, setTodoInput] = useState("");
     const [todoData, setTodoData] = useState([]);
+    const [isEdit, setIsEdit] = useState(false);
+    const [editItemIndex, setEditItemIndex] = useState("");
 
     // Note: Add item handler...!
     const addItem = () => {
         let todoDataClone = [...todoData];
-        todoDataClone.push(todoInput);
+        let formObj = {
+            inputData: todoInput,
+            time: new Date().getTime()
+        };
+        todoDataClone.push(formObj);
         setTodoData(todoDataClone);
         setTodoInput("");
+    };
+
+    // Note: Delete item handler...!
+    const deleteItemHandler = (key) => {
+        // console.log(key);
+
+        let todoDataClone = [...todoData];
+        todoDataClone.splice(key, 1);
+        setTodoData(todoDataClone);
+    };
+
+    // Note: Edit item handler...!
+    const editItemHandler = (key, data) => {
+        // console.log(key, data);
+
+        if (data) {
+            setTodoInput(data?.inputData);
+            setIsEdit(true);
+            setEditItemIndex(key);
+        };
+    };
+
+    // Note: Update item handler...!
+    const updateItemHandler = () => {
+        let todoDataClone = [...todoData];
+        let formObj = {
+            inputData: todoInput,
+            time: new Date().getTime()
+        };
+        todoDataClone.splice(editItemIndex, 1, formObj);
+        setTodoData(todoDataClone);
+        setTodoInput("");
+        setEditItemIndex("");
+        setIsEdit(false);
     };
 
     return (
@@ -44,16 +88,55 @@ const TodoListApp = () => {
                                                         value={todoInput}
                                                         onChange={(e) => setTodoInput(e.target.value)}
                                                     />
-                                                    <div>
-                                                        <button
-                                                            type="button"
-                                                            className="btn btn-primary"
-                                                            id={styles.addBtn}
-                                                            onClick={addItem}
-                                                        >
-                                                            Add
-                                                        </button>
-                                                    </div>
+                                                    {
+                                                        (isEdit)
+                                                            ?
+                                                            (
+                                                                <div>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-primary"
+                                                                        id={styles.addBtn}
+                                                                        onClick={updateItemHandler}
+                                                                        disabled={todoInput.trim().length < 1}
+                                                                    >
+                                                                        Update
+                                                                    </button>
+
+                                                                    {/* <button
+                                                                        type="button"
+                                                                        className="btn btn-primary"
+                                                                        id={styles.addBtn}
+                                                                        // onClick={}
+                                                                    >
+                                                                        Cancel
+                                                                    </button> */}
+                                                                </div>
+                                                            )
+                                                            :
+                                                            (
+                                                                <div style={{ display: "flex", flexDirection: "row" }}>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-primary"
+                                                                        id={styles.addBtn}
+                                                                        onClick={addItem}
+                                                                        disabled={todoInput.trim().length < 1}
+                                                                    >
+                                                                        Add
+                                                                    </button>
+
+                                                                    <button
+                                                                        type="button"
+                                                                        className="btn btn-primary"
+                                                                        id={styles.addBtn}
+                                                                        disabled={todoData.length < 1}
+                                                                    >
+                                                                        Clear
+                                                                    </button>
+                                                                </div>
+                                                            )
+                                                    }
                                                 </div>
                                             </div>
                                         </div>
@@ -67,43 +150,18 @@ const TodoListApp = () => {
                                             (
                                                 todoData.map((item, index) => {
                                                     return (
-                                                        <ul
+                                                        <List
                                                             key={index}
-                                                            className="list-group list-group-horizontal rounded-0 bg-transparent"
-                                                        >
-                                                            <li
-                                                                className="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent">
-                                                                <p className="lead fw-normal mb-0">
-                                                                    {item}
-                                                                </p>
-                                                            </li>
-
-                                                            <li className="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
-                                                                <div className="d-flex flex-row justify-content-end mb-1">
-                                                                    <a href="#" className="text-info" data-mdb-toggle="tooltip" title="Edit todo">
-                                                                        <i className="fas fa-pencil-alt me-3"></i>
-                                                                    </a>
-
-                                                                    <a href="#!" className="text-danger" data-mdb-toggle="tooltip" title="Delete todo">
-                                                                        <i className="fas fa-trash-alt"></i>
-                                                                    </a>
-                                                                </div>
-
-                                                                <div className="text-end text-muted">
-                                                                    <a href="#" className="text-muted" data-mdb-toggle="tooltip" title="Created date">
-                                                                        <p className="small mb-0">
-                                                                            <i className="fas fa-info-circle me-2"></i>
-                                                                            {new Date().toLocaleTimeString()}
-                                                                        </p>
-                                                                    </a>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
+                                                            elementIndex={index}
+                                                            data={item}
+                                                            deleteHandler={deleteItemHandler}
+                                                            editHandler={editItemHandler}
+                                                        />
                                                     );
                                                 })
                                             )
                                             :
-                                            (null)
+                                            (<DataNotFound />)
                                     }
                                 </div>
                             </div>

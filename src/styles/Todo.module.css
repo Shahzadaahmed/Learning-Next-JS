@@ -15,3 +15,8 @@
     padding: 13px 18px 13px 18px;
     margin-left: 5px;
 }
+
+.notFound {
+    color: black;
+    text-align: center;
+}
